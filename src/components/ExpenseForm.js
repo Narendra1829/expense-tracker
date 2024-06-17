@@ -88,7 +88,7 @@ const ExpenseForm = ({ setExpenseData }) => {
       <Input
         className="input-container"
         id="amount"
-        label="Amount"
+        label="Amount"  
         name="Amount"
         value={formData?.amount}
         onChange={handleOnChange}
