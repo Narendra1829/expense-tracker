@@ -75,6 +75,8 @@ main {
   display: flex;
   flex-direction: column;
   margin-bottom: 12px;
+  position: relative;
+  margin-bottom: 20px;
 }
 
 .input-container label {
@@ -84,6 +86,7 @@ main {
 .input-container input {
   height: 28px;
   font-family: inherit;
+  
 }
 
 .category {
@@ -118,6 +121,13 @@ main {
   background-color: #ddd;
 }
 
+.error {
+  color: red;
+  margin: 0;
+  font-size: 12px;
+  position: absolute;
+  top: 100%;
+}
 @media (max-width: 900px) {
   body {
     margin-inline: 16px;

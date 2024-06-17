@@ -8,7 +8,7 @@ const ExpenseTable = ({ expenseData }) => {
           <th>Title</th>
           <th>
             <select>
-              <option value="">All</option>
+              <option value="">All Items</option>
               <option value="grocery">Grocery</option>
               <option value="clothes">Clothes</option>
               <option value="bills">Bills</option>
@@ -40,7 +40,7 @@ const ExpenseTable = ({ expenseData }) => {
         </tr>
       </thead>
       <tbody>
-        {expenseData?.map(({ title, id, category, amount }) => {
+        {(expenseData || [])?.map(({ title, id, category, amount }) => {
           return (
             <tr key={id}>
               <td>{title}</td>
