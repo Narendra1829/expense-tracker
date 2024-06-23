@@ -4,9 +4,20 @@ import ExpenseTable from "./components/ExpenseTable";
 import ContextMenu from "./components/ContextMenu";
 import { useState } from "react";
 import ExpenseData from "./components/ExpenseData";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 
 function App() {
-  const [expenseData, setExpenseData] = useState(ExpenseData || []);
+  const [expenseData, setExpenseData] = useLocalStorage(
+    "formData",
+    ExpenseData
+  );
+  const [editingRowId, setEditingRowId] = useState("");
+  const [formData, setFormData] = useState({
+    title: "",
+    category: "",
+    amount: "",
+    id: crypto.randomUUID(),
+  });
 
   return (
     <div className="App">
@@ -16,10 +27,17 @@ function App() {
           <ExpenseForm
             expenseData={expenseData}
             setExpenseData={setExpenseData}
+            formData={formData}
+            setFormData={setFormData}
+            editingRowId={editingRowId}
+            setEditingRowId={setEditingRowId}
           />
           <ExpenseTable
             expenseData={expenseData}
             setExpenseData={setExpenseData}
+            formData={formData}
+            setFormData={setFormData}
+            setEditingRowId={setEditingRowId}
           />
           <ContextMenu />
         </div>

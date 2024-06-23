@@ -1,26 +1,36 @@
 import React, { useState } from "react";
-import Input from "./Input";
+import { Input, SelectMenu, validationConfig } from "./util";
 
-const ExpenseForm = ({ setExpenseData }) => {
+const ExpenseForm = ({
+  setExpenseData,
+  formData,
+  setFormData,
+  editingRowId,
+  setEditingRowId,
+}) => {
   const [errors, setErrors] = useState({});
-  const [formData, setFormData] = useState({
-    title: "",
-    category: "",
-    amount: "",
-    id: crypto.randomUUID(),
-  });
 
   const isValid = (formData) => {
     const errorsData = {};
-    if (!formData.title) {
-      errorsData.title = "Title is required";
-    }
-    if (!formData.category) {
-      errorsData.category = "Category is required";
-    }
-    if (!formData.amount) {
-      errorsData.amount = "Amount is required";
-    }
+    Object.entries(formData).map(([key, value]) => {
+      validationConfig[key]?.some((rule) => {
+        if (rule.required && !value) {
+          errorsData[key] = rule.message;
+          return true;
+        }
+        if (rule.minLength && value.length < 3) {
+          errorsData[key] = rule.message;
+          return true;
+        }
+        if (rule.pattern && !rule.pattern.test(value)) {
+          errorsData[key] = rule.message;
+          return true;
+        }
+        return false;
+      });
+      return null;
+    });
+
     setErrors(errorsData);
     return errorsData;
   };
@@ -37,8 +47,24 @@ const ExpenseForm = ({ setExpenseData }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const validate = isValid(formData);
-    console.log("validate", Object.keys(validate).length);
     if (Object.keys(validate).length) {
+      return;
+    }
+    if (editingRowId) {
+      setExpenseData((prevState) =>
+        prevState.map((prevExpense) => {
+          if (prevExpense.id === editingRowId) {
+            return { ...formData, id: editingRowId };
+          }
+          return prevExpense;
+        })
+      );
+      setEditingRowId("");
+      setFormData({
+        title: "",
+        category: "",
+        amount: "",
+      });
       return;
     }
     setExpenseData((prevState) => [
@@ -65,37 +91,27 @@ const ExpenseForm = ({ setExpenseData }) => {
         error={errors?.title}
         placeholder="Enter title"
       />
-      <div className="input-container">
-        <label htmlFor="category">Category</label>
-        <select
-          className="category"
-          name="category"
-          value={formData?.category}
-          onChange={(e) => {
-            handleOnChange(e);
-          }}>
-          <option hidden value="">
-            Select Category
-          </option>
-          <option value="Grocery">Grocery</option>
-          <option value="Clothes">Clothes</option>
-          <option value="Bills">Bills</option>
-          <option value="Education">Education</option>
-          <option value="Medicine">Medicine</option>
-        </select>
-        <p className="error">{errors?.category}</p>
-      </div>
+      <SelectMenu
+        value={formData?.category}
+        onChange={handleOnChange}
+        error={errors?.category}
+        label="Category"
+        name="category"
+        id="category"
+        options={["Grocery", "Clothes", "Bills", "Education", "Medicine"]}
+        defaultOption="Select Category"
+      />
       <Input
         className="input-container"
         id="amount"
-        label="Amount"  
-        name="Amount"
+        label="Amount"
+        name="amount"
         value={formData?.amount}
         onChange={handleOnChange}
         error={errors?.amount}
         placeholder="Enter amount"
       />
-      <button className="add-btn">Add</button>
+      <button className="add-btn">{editingRowId ? "Save" : "Add"}</button>
     </form>
   );
 };
